@@ -18,8 +18,16 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::resource('categoria', App\Http\Controllers\CategoriaController::class)->only(['index','store','show','update','destroy']);
-Route::resource('libro', App\Http\Controllers\LibroController::class)->only(['index','store','show','update','destroy']);
+Route::group(['middleware' => 'auth:sanctum'], function () {
+    Route::post('/login', [\App\Http\Controllers\Auth\LoginController::class, 'login']);
+    Route::post('/logout', [\App\Http\Controllers\Auth\LogoutController::class, 'logout']);
 
-Route::put('rentar-libro/{id}', [App\Http\Controllers\LibroController::class, 'rentaLibro']);
-Route::get('listar-libros-disponibles', [App\Http\Controllers\LibroController::class, 'listarLibrosDisponibles']);
+    Route::resource('categoria', App\Http\Controllers\CategoriaController::class)->only(['index','store','show','update','destroy']);
+    Route::resource('libro', App\Http\Controllers\LibroController::class)->only(['index','store','show','update','destroy']);
+
+    Route::put('rentar-libro/{id}', [App\Http\Controllers\LibroController::class, 'rentaLibro']);
+    Route::get('listar-libros-disponibles', [App\Http\Controllers\LibroController::class, 'listarLibrosDisponibles']);
+
+});
+
+Route::post('/register', [\App\Http\Controllers\Auth\RegisterController::class, 'register']);

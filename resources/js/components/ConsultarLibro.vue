@@ -1,19 +1,20 @@
 <template>
-  <div class="form-floating w-100">
-  <select class="form-select" id="floatingSelect" aria-label="Floating label select example" @change="seleccionarCategoria">
-    <option value selected disabled>Seleccionar categoria</option>
+  <select class="form-select my-2" id="floatingSelect" aria-label="Floating label select example" @change="seleccionarCategoria">
+    <option :value="value" selected disabled>{{ seleccionado ? seleccionado.nombre : 'Seleccionar categoria' }}</option>
     <option :value="categoria.id" v-for="categoria in categorias" :key="categoria.id">{{ categoria.nombre }}</option>
   </select>
-</div>
 </template>
 
 <script>
   import axios from 'axios';
 
   export default {
+    props: ['categoriaSeleccionada'],
     data() {
       return {
-        categorias: []
+        categorias: [],
+        seleccionado: null,
+        value: ""
       };
     },
     created() {
@@ -32,6 +33,13 @@
       },
       seleccionarCategoria(e) {
         this.$emit('categoria', e.target.value);
+      }
+    },
+    watch: {
+      categoriaSeleccionada(data) {
+        this.seleccionado = data[0].categoria;
+        this.value = data[0].categoria.id;
+        console.log('this.seleccionado ', this.seleccionado);
       }
     }
   };

@@ -20,8 +20,8 @@
       <td>{{ libro.fecha_lanzamiento }}</td>
       <td>{{ libro.rentado ? 'Disponible' : 'No disponible' }}</td>
       <td>
-        <button type="button" class="btn btn-success me-1">Editar</button>
-        <button type="button" class="btn btn-danger me-1">Eliminar</button>
+        <button type="button" class="btn btn-success me-1" @click="editar(libro.id)">Editar</button>
+        <button type="button" class="btn btn-danger me-1" @click="eliminar(libro.id)">Eliminar</button>
         </td>
     </tr>
   </tbody>
@@ -32,7 +32,7 @@
   import axios from 'axios';
 
   export default {
-    props: ['categoria'],
+    props: ['categoria', 'actualizar'],
     data() {
       return {
         libros: [],
@@ -54,10 +54,28 @@
           });
       },
       listarLibrosPorCategoria(id) {
-        axios.get('http://localhost:8000/api/listar-libros-disponibles?categoria_id='+id)
+        axios.get('http://localhost:8000/api/listar-libros-disponibles', {
+            params: {
+              categoria_id: id
+            }
+          })
           .then(response => {
             this.libros = response.data.data;
             console.log('response ', this.libros);
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      },
+      editar(id) {
+        let libro = this.libros.filter(e => e.id === id);
+        this.$emit('data-libro', libro);
+      },
+      eliminar(id) {
+        axios.delete(`http://localhost:8000/api/libro/${id}`)
+          .then(response => {
+            this.listarLibros();
+            alert(response.data.mensaje);
           })
           .catch(error => {
             console.error(error);
@@ -68,6 +86,11 @@
       categoria(id) {
         this.listarLibrosPorCategoria(id);
         console.log('categoria actualizada: ', id);
+      },
+      actualizar(val) {
+        if (val) {
+          this.listarLibros();
+        }
       }
     }
   };

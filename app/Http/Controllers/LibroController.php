@@ -33,7 +33,7 @@ class LibroController extends Controller
         $libro = Libro::create($request->post());
         return response()->json([
             'mensaje' => 'Libro creado',
-            'categoria'=>$libro
+            'libro'=>$libro
         ]);
     }
 
@@ -70,7 +70,7 @@ class LibroController extends Controller
 
         return response()->json([
             'mensaje' => 'Libro actualizado',
-            'categoria'=>$libro
+            'libro'=>$libro
         ]);
     }
 
@@ -96,7 +96,6 @@ class LibroController extends Controller
 
     public function listarLibrosDisponibles(Request $request)
     {
-        // dd($request);
         $query = Libro::with('categoria')->where('rentado', false)->orderBy('fecha_lanzamiento')->orderBy('nombre');
 
         if ($request->has('categoria_id')) {
